@@ -16,7 +16,7 @@ jobs:
         working-directory: ./Traincrew_Decrease_graph
         run: |
           msbuild `
-            -o ../out `
+            -p:OutputPath=../out `
             -p:PublishSingleFile=true `
             -p:Configuration=Release
       - name: Upload Exe
