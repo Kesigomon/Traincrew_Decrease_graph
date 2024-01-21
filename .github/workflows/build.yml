@@ -1,0 +1,31 @@
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: ['x64', 'x86']
+        standalone: [true, false]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup dotnet 6.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+      - name: Build Exe
+        working-directory: ./Traincrew_Decrease_graph
+        run: |
+          dotnet publish -c Release \
+            -o ../out \
+            -r win-${{ matrix.platform }} -p:PublishSingleFile=true --self-contained ${{ matrix.standalone }}
+      - name: Upload Exe
+        uses: actions/upload-artifact@v3
+        with:
+          name: Traincrew_Decrease_graph-${{ matrix.platform }}${{ (matrix.standalone && '-standalone') || '' }}.exe
+          path: out/Traincrew_Decrease_graph.exe
