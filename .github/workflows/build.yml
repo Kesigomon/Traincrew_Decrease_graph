@@ -17,8 +17,8 @@ jobs:
       - name: Build Exe
         working-directory: ./Traincrew_Decrease_graph
         run: |
-          dotnet publish -c Release \
-            -o ../out \
+          dotnet publish -c Release 
+            -o ../out 
             -r win-${{ matrix.platform }} -p:PublishSingleFile=true --self-contained ${{ matrix.standalone }}
       - name: Upload Exe
         uses: actions/upload-artifact@v3
