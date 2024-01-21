@@ -18,9 +18,11 @@ jobs:
           msbuild `
             -p:OutputPath=../out `
             -p:PublishSingleFile=true `
-            -p:Configuration=Release
+            -p:Configuration=Release `
+            -p:DebugSymbols=false `
+            -p:DebugType=None
       - name: Upload Exe
         uses: actions/upload-artifact@v3
         with:
-          name: Traincrew_Decrease_graph.exe
-          path: out/Traincrew_Decrease_graph.exe
+          name: Traincrew_Decrease_graph
+          path: out
