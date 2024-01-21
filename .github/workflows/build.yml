@@ -7,20 +7,18 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        standalone: [true, false]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build Exe
         working-directory: ./Traincrew_Decrease_graph
         run: |
-          dotnet build -c Release `
+          msbuild `
             -o ../out `
-            -p:PublishSingleFile=true --self-contained ${{ matrix.standalone }} 
+            -p:PublishSingleFile=true `
+            -p:Configuration=Release
       - name: Upload Exe
         uses: actions/upload-artifact@v3
         with:
-          name: Traincrew_Decrease_graph-any${{ (matrix.standalone && '-standalone') || '' }}.exe
+          name: Traincrew_Decrease_graph.exe
           path: out/Traincrew_Decrease_graph.exe
