@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.3.1
       - name: Build Exe
         working-directory: ./Traincrew_Decrease_graph
         run: |
