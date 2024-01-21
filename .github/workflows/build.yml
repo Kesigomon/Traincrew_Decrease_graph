@@ -16,7 +16,7 @@ jobs:
       - name: Build Exe
         working-directory: ./Traincrew_Decrease_graph
         run: |
-          dotnet publish -c Release `
+          dotnet build -c Release `
             -o ../out `
             -p:PublishSingleFile=true --self-contained ${{ matrix.standalone }} 
       - name: Upload Exe
