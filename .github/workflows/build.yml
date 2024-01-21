@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     strategy:
       matrix:
         platform: ['x64', 'x86']
@@ -14,10 +14,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup dotnet 6.0.x
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0.x'
       - name: Build Exe
         working-directory: ./Traincrew_Decrease_graph
         run: |
