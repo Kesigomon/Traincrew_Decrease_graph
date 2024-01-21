@@ -9,7 +9,6 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        platform: ['x64', 'x86']
         standalone: [true, false]
     steps:
       - name: Checkout
@@ -19,9 +18,9 @@ jobs:
         run: |
           dotnet publish -c Release `
             -o ../out `
-            -r win-${{ matrix.platform }} -p:PublishSingleFile=true --self-contained ${{ matrix.standalone }} 
+            -p:PublishSingleFile=true --self-contained ${{ matrix.standalone }} 
       - name: Upload Exe
         uses: actions/upload-artifact@v3
         with:
-          name: Traincrew_Decrease_graph-${{ matrix.platform }}${{ (matrix.standalone && '-standalone') || '' }}.exe
+          name: Traincrew_Decrease_graph-any${{ (matrix.standalone && '-standalone') || '' }}.exe
           path: out/Traincrew_Decrease_graph.exe
