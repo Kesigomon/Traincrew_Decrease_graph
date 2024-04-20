@@ -68,6 +68,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: out.zip
-          asset_name: Traincrew_Decrease_graph-${{ (matrix.standalone && '-standalone') || '' }}.zip
+          asset_name: Traincrew_Decrease_graph${{ (matrix.standalone && '-standalone') || '' }}.zip
           tag: ${{ needs.create_new_release.outputs.version }}
           overwrite: true
