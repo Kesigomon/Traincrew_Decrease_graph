@@ -1,0 +1,73 @@
+on:
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+jobs:
+  create_new_release:
+    runs-on: ubuntu-latest
+    name: "Create New Release"
+    outputs:
+      version: ${{ steps.bump_version.outputs.version }}
+    steps:
+      - name: Get latest release
+        id: latest_release
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const response = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            return response.data.tag_name;
+      - name: Bump patch version
+        id: bump_version
+        run: |
+          version=$(echo ${{ steps.latest_release.outputs.result }} | awk -F. '{$3+=1; OFS="."; print $1,$2,$3}')
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+      - name: Create New Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.bump_version.outputs.version }}
+          release_name: Release ${{ steps.bump_version.outputs.version }}
+          draft: false
+          prerelease: false       
+  build:
+    runs-on: ubuntu-latest
+    name: "Build"
+    needs: create_new_release
+    strategy:
+      matrix:
+        standalone: [ true, false ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup dotnet 8.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build Exe
+        working-directory: ./Traincrew_Decrease_graph
+        run: |
+          dotnet publish -c Release \
+            -o ../out \
+            -r win-x64 \
+            -p:PublishSingleFile=true \
+            -p:EnableWindowsTargeting=true \
+            --self-contained ${{ matrix.standalone }}
+      - name: Zip binaries
+        run: |
+          cd out
+          zip -r ../out.zip .
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@2.9.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: out.zip
+          asset_name: Traincrew_Decrease_graph-${{ (matrix.standalone && '-standalone') || '' }}.zip
+          tag: ${{ needs.create_new_release.outputs.version }}
+          overwrite: true
