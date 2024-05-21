@@ -1,7 +1,5 @@
-﻿using System.ComponentModel;
-using System.Reflection;
+﻿using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using ScottPlot;
 using TrainCrew;
@@ -30,10 +28,30 @@ namespace Traincrew_Decrease_graph
             MouseLeftButtonDown += (sender, e) =>
             {
                 e.Handled = true; DragMove(); };
-            CompositionTarget.Rendering += update;
+            CompositionTarget.Rendering += (_, _ ) =>
+            {
+                try
+                {
+                    update();
+                }
+                catch (Exception e)
+                {
+                    try
+                    {
+                        // クラッシュログを出力する 
+                        Directory.CreateDirectory("crashlog");
+                        File.WriteAllText($"crashlog/{DateTime.Now:yyyyMMddHHmmss}.txt", e.ToString());
+                    }
+                    catch (Exception)
+                    {
+                        // クラッシュログの出力に失敗した場合は何もしない
+                    }
+                    Close();
+                }
+            };
         }
 
-        private void update(object sender, EventArgs e)
+        private void update()
         {
             // 今ある線を全部クリア
             _plot.Clear();
